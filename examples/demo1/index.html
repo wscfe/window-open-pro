@@ -1,0 +1,87 @@
+<!--
+ * @Author: wangshicheng
+ * @Date: 2021-09-11 15:36:17
+ * @Description: 
+ * @FilePath: /window-open/examples/demo1/index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>方案一</title>
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <div style="margin-top: 32px;">
+        <button onclick="handleClickSuccuess()">打开新Tab页, 异步耗时3s【接口正常】</button>
+        <div>
+          <div>1. 打开一个新的loading页面， 支持自定义「loading文案」以及「样式」</div>
+          <div style="margin-top: 8px;">2. 等待异步请求成功后，更新loading页面的url至目标页面</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 64px;">
+        <button onclick="handleClickError()">打开新Tab页, 异步耗时3s【接口异常】</button>
+        <div>
+          <div>1. 打开一个新的loading页面， 支持自定义「loading文案」以及「样式」</div>
+          <div style="margin-top: 8px;">2. 等待异步请求失败后，页面弹出异常错误提示，支持自定义「异常文案」以及「样式」</div>
+          <div style="margin-top: 8px;">3. 异常提示默认展示3s，之后可以自定义设置是跳转到发起起始页面，还是直接关闭tab</div>
+        </ul>
+      </div>
+    </div>
+    <script src="/__build__/demo1.js"></script>
+    <script>
+      const apiSuccessPromise = async () => {
+        await new Promise(resolve => {
+          setTimeout(() => {
+            console.log('模拟执行接口请求耗时')
+            resolve()
+          }, 3000)
+        })
+
+        const res = {
+          code: 0,
+          mag: '请求成功',
+          data: {
+            id: 1212
+          }
+        }
+        return Promise.resolve(`http://www.baidu.com?id=${res?.data?.id || 343443}`)
+      }
+
+      const apiErrorPromise = async () => {
+        await new Promise(resolve => {
+          setTimeout(() => {
+            console.log('模拟执行接口请求耗时')
+            resolve()
+          }, 3000)
+        })
+
+        const hasError = true
+        if (hasError) {
+          return Promise.reject({
+            msg: '接口发生业务异常'
+          })
+        }
+      }
+
+      const errorCallback = () => {
+        console.log('接口执行失败了')
+      }
+
+      const handleClickSuccuess = () => {
+        windowOpen({
+          apiPromise: apiSuccessPromise,
+          errorCallback
+        })
+      }
+
+      const handleClickError = () => {
+        windowOpen({
+          apiPromise: apiErrorPromise,
+          errorCallback
+        })
+      }
+    </script>
+  </body>
+</html>
