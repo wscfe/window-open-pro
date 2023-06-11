@@ -21,3 +21,13 @@
 1.  通过判断 window.open 执行结果，成功正常跳转；失败给予页面友好提示；可以增加一个 callback 用户自行处理失败后的动作
 
 # 使用方式
+
+```
+npm i window-open-pro
+yarn add i window-open-pro
+
+```
+
+```
+详情API以及DMEO可以参考 项目中demo
+```
