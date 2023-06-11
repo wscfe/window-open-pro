@@ -2,7 +2,7 @@
  * @Author: wangshicheng
  * @Date: 2021-09-11 13:21:35
  * @Description: 处理浏览器window.open非用户操作被安全策略拦截问题
- * @FilePath: /window-open/src/index.ts
+ * @FilePath: /window-open-pro/src/index.ts
  */
 
 export interface IWindowOpen {
@@ -16,7 +16,7 @@ export interface IWindowOpen {
   loadingStyle?: string
 }
 
-const getErr = (err: unknown) => {
+export const getErr = (err: unknown) => {
   if (typeof err === 'string') {
     return err
   }
