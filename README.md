@@ -63,22 +63,33 @@ export interface IWindowOpen {
 
 ```ts
 import React from 'react';
-import { windowOpen } from 'window-open-pro';
+import { windowOpen } from '@coobee/window-open-pro';
 
 const Appp = () => {
-
+   
     const handleSubmit = () => {
         windowOpen({
           // 异步请求失败，自动关闭loading 新tab页
           isClose: true,
+          
+          // 1. 异步方法没有参数写法
+          // apiPromise: asyncApiPromise
+          
+          // 2. 异步方法存在参数
           apiPromise: async () => await asyncApiPromise()
         });
     };
-
+    
     // 异步请求方法封装，注意方法需要返回目标URL
-    const asyncApiPromise = async () => {
-        const resData = await fetchApi(apis, {});
-        return return utils.formatUrl(`/xx/xx/xx/${resData?.id}`);
+    const asyncApiPromise = () => {
+        return new Promise((resolve, reject) => {
+            try {
+                const resData = await fetchApi(apis, {});
+                resolve(utils.formatUrl(`/deposit/share/detail/${resData?.id}`));      
+            } catch(err){
+                reject(err.msg)
+            }
+        })
     };
 
     return (
