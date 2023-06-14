@@ -14,7 +14,7 @@
     a. 若接口成功返回，拿到 url 参数，更新 loading 的 window 对象的 location.href
     b. 若接口执行失败，先给予 loading 页面提示，设置延时，【然后关闭 loading 页面，或者 location.href 设置成原来的 url】
 
-![效果图](./static/demo.gif)
+![效果图](./examples/demo.gif)
 
 方案二：
 
