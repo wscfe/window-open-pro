@@ -81,7 +81,7 @@ const showErrorMsg = (params: {
             >
               <div>
                 <span>${msg || '存在异常'}</span>
-                <span id="window-open-error-msg">, ${duration}秒跳转页面</span>
+                <span id="window-open-error-msg">, ${duration}秒后关闭</span>
               </div>
             </div>
           </div>
@@ -146,6 +146,10 @@ export const windowOpen: (
   try {
     const resUrl = await apiPromise();
     if (!resUrl) {
+      // 如果没有返回url，但存在win，说明打开了新的tab，需要关闭新tab，避免造成误解
+      if (win) {
+        (win as Window).close();
+      }
       return;
     }
 
@@ -166,16 +170,11 @@ export const windowOpen: (
     const msg = getErrorMsg?.(err);
     clearTimeout(timer);
 
-    if (isOverTime) {
-      // console.log('接口超过3s了', win);
-    } else {
-      // console.log('接口很快，没超过3s', win);
-      win = window.open('about:blank');
-    }
-
+    // 如果异步操作失败，并且没有超过3s，则不用打开error页面
     if (!win) {
       return;
     }
+
     showErrorMsg({ msg, duration, errorStyle, win, errorPageUrl });
 
     setTimeout(() => {
