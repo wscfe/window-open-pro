@@ -13,7 +13,7 @@
   <body>
     <div style="text-align: center;">
       <div style="margin-top: 32px;">
-        <button onclick="handleClickSuccuess()">打开新Tab页, 异步耗时3s【接口正常】</button>
+        <button onclick="handleClickSuccuess()">打开新Tab页, 异步耗时6s【接口正常】</button>
         <div>
           <div>1. 打开一个新的loading页面， 支持自定义「loading文案」以及「样式」</div>
           <div style="margin-top: 8px;">2. 等待异步请求成功后，更新loading页面的url至目标页面</div>
@@ -21,7 +21,7 @@
       </div>
 
       <div style="margin-top: 64px;">
-        <button onclick="handleClickError()">打开新Tab页, 异步耗时3s【接口异常】</button>
+        <button onclick="handleClickError()">打开新Tab页, 异步耗时6s【接口异常】</button>
         <div>
           <div>1. 打开一个新的loading页面， 支持自定义「loading文案」以及「样式」</div>
           <div style="margin-top: 8px;">2. 等待异步请求失败后，页面弹出异常错误提示，支持自定义「异常文案」以及「样式」</div>
@@ -36,7 +36,7 @@
           setTimeout(() => {
             console.log('模拟执行接口请求耗时')
             resolve()
-          }, 3000)
+          }, 6000)
         })
 
         const res = {
@@ -54,7 +54,7 @@
           setTimeout(() => {
             console.log('模拟执行接口请求耗时')
             resolve()
-          }, 3000)
+          }, 6000)
         })
 
         const hasError = true

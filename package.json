@@ -1,6 +1,6 @@
 {
   "name": "window-open-pro",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "处理window.open被浏览器拦截问题",
   "keywords": [],
   "main": "dist/index.umd.js",
