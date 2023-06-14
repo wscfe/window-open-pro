@@ -7,63 +7,63 @@
 
 export interface IWindowOpen {
   /** 异步操作异常之后，是关闭loading页，还是设置为发起页 */
-  isClose?: boolean
+  isClose?: boolean;
   /** 设置异常提示的展示时间 */
-  duration?: number
+  duration?: number;
   /** 设置window.open的最大阻塞时间， chrome测试：5s之内都不会被阻塞 */
-  maxBlockTime?: number
+  maxBlockTime?: number;
   /** 异步操作发生异常之后跳转的页面，url上会自动拼接： ?errMsg=xxxx, 由业务方自定处理 */
-  errorPageUrl?: string
+  errorPageUrl?: string;
   /** 自定义 loading 页面 */
-  loadingPageUrl?: string
+  loadingPageUrl?: string;
 
   /** 异常消息的样式 */
-  errorStyle?: string
+  errorStyle?: string;
   /** loading 文档的样式 */
-  loadingStyle?: string
+  loadingStyle?: string;
 
   /** 异步方法，返回的是目标页面URL */
-  apiPromise: () => Promise<string>
+  apiPromise: () => Promise<string>;
   /** 异步方法执行失败之后的回调 */
-  errorCallback?: (err: unknown) => void
+  errorCallback?: (err: unknown) => void;
   /** 提取异常提示信息 */
-  getErrorMsg?: (err: unknown) => string
+  getErrorMsg?: (err: unknown) => string;
 }
 
 export const getErr = (err: unknown) => {
   if (typeof err === 'string') {
-    return err
+    return err;
   }
   if (typeof err === 'object') {
-    return JSON.stringify(err, Object.getOwnPropertyNames(err))
+    return JSON.stringify(err, Object.getOwnPropertyNames(err));
   }
-  return '存在异常'
-}
+  return '存在异常';
+};
 
 const showErrorMsg = (params: {
-  msg: string
-  duration: number
-  errorStyle?: string
-  win: Window | null
-  errorPageUrl?: string
+  msg: string;
+  duration: number;
+  errorStyle?: string;
+  win: Window | null;
+  errorPageUrl?: string;
 }) => {
-  const { msg, errorStyle, win, errorPageUrl } = params || {}
-  let { duration = 3 } = params || {}
+  const { msg, errorStyle, win, errorPageUrl } = params || {};
+  let { duration = 3 } = params || {};
 
   if (!win) {
-    return
+    return;
   }
 
   if (errorPageUrl) {
-    win.location.href = `${errorPageUrl}?errMsg=${msg}`
-    return
+    win.location.href = `${errorPageUrl}?errMsg=${msg}`;
+    return;
   }
 
-  const timer = setInterval(function() {
+  const timer = setInterval(function () {
     if (duration > 0) {
-      duration--
+      duration--;
       if (!win) {
-        return
+        return;
       }
       win.document.body.innerHTML = `
         <div style="margin-top: 8px; color: #232323; ${errorStyle}">
@@ -86,14 +86,16 @@ const showErrorMsg = (params: {
             </div>
           </div>
       </div>
-      `
+      `;
     } else {
-      clearInterval(timer)
+      clearInterval(timer);
     }
-  }, 1000)
-}
+  }, 1000);
+};
 
-export const windowOpen: (params: IWindowOpen) => void = params => {
+export const windowOpen: (
+  params: IWindowOpen,
+) => Promise<void> = async params => {
   const {
     apiPromise,
     errorCallback,
@@ -105,20 +107,22 @@ export const windowOpen: (params: IWindowOpen) => void = params => {
     loadingPageUrl,
     errorPageUrl,
     loadingStyle,
-    errorStyle
-  } = params || {}
-  let win: Window | null = null
-  const originHref = location.href
-  let isOverTime = false
+    errorStyle,
+  } = params || {};
+  let win: Window | null = null;
+  const originHref = location.href;
+  let isOverTime = false;
 
   const timer = setTimeout(() => {
-    isOverTime = true
+    isOverTime = true;
 
-    win = window.open('about:blank') // 打开一个空Tab页
-    if (!win) return
+    win = window.open('about:blank'); // 打开一个空Tab页
+    if (!win) {
+      return;
+    }
 
     if (loadingPageUrl) {
-      win.location.href = loadingPageUrl
+      win.location.href = loadingPageUrl;
     } else {
       win.document.body.innerHTML = `
         <div style="margin-top: 8px; color: #232323; ${loadingStyle}">
@@ -135,58 +139,57 @@ export const windowOpen: (params: IWindowOpen) => void = params => {
               页面加载中, 请稍后...
           </div>
         </div>
-      `
+      `;
     }
-  }, maxBlockTime * 1000)
+  }, maxBlockTime * 1000);
 
-  apiPromise()
-    ?.then(resUrl => {
-      if (!resUrl) {
-        return
-      }
+  try {
+    const resUrl = await apiPromise();
+    if (!resUrl) {
+      return;
+    }
 
-      clearTimeout(timer)
+    clearTimeout(timer);
 
-      if (isOverTime) {
-        console.log('接口超过3s了', win)
-        if (win) {
-          win.location.href = resUrl
-        } else {
-          window.location.href = resUrl
-        }
+    if (isOverTime) {
+      // console.log('接口超过3s了', win);
+      if (win) {
+        (win as Window).location.href = resUrl;
       } else {
-        console.log('接口很快，没超过3s', win, resUrl)
-        window.open(resUrl)
+        window.location.href = resUrl;
       }
-    })
-    ?.catch(err => {
-      const msg = getErrorMsg?.(err)
-      clearTimeout(timer)
+    } else {
+      // console.log('接口很快，没超过3s', win, resUrl);
+      window.open(resUrl);
+    }
+  } catch (err) {
+    const msg = getErrorMsg?.(err);
+    clearTimeout(timer);
 
-      if (isOverTime) {
-        console.log('接口超过3s了', win)
-      } else {
-        console.log('接口很快，没超过3s', win)
-        win = window.open('about:blank')
-      }
+    if (isOverTime) {
+      // console.log('接口超过3s了', win);
+    } else {
+      // console.log('接口很快，没超过3s', win);
+      win = window.open('about:blank');
+    }
 
+    if (!win) {
+      return;
+    }
+    showErrorMsg({ msg, duration, errorStyle, win, errorPageUrl });
+
+    setTimeout(() => {
       if (!win) {
-        return
+        return;
       }
-      showErrorMsg({ msg, duration, errorStyle, win, errorPageUrl })
 
-      setTimeout(() => {
-        if (!win) {
-          return
-        }
+      if (isClose) {
+        win.close();
+      } else {
+        win.location.href = originHref;
+      }
+    }, duration * 1000);
 
-        if (isClose) {
-          win.close()
-        } else {
-          win.location.href = originHref
-        }
-      }, duration * 1000)
-
-      errorCallback?.(err)
-    })
-}
+    errorCallback?.(err);
+  }
+};
