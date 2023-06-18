@@ -63,7 +63,7 @@ export interface IWindowOpen {
 
 ```ts
 import React from 'react';
-import { windowOpen } from '@coobee/window-open-pro';
+import { windowOpen } from 'window-open-pro';
 
 const Appp = () => {
    
@@ -85,7 +85,7 @@ const Appp = () => {
         return new Promise((resolve, reject) => {
             try {
                 const resData = await fetchApi(apis, {});
-                resolve(utils.formatUrl(`/deposit/share/detail/${resData?.id}`));      
+                resolve(utils.formatUrl(`/xx/xx/${resData?.id}`));      
             } catch(err){
                 reject(err.msg)
             }
