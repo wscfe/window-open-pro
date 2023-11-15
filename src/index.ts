@@ -164,7 +164,11 @@ export const windowOpen: (
       }
     } else {
       // console.log('接口很快，没超过3s', win, resUrl);
-      window.open(resUrl);
+      // todo: 在safari浏览器，即使接口返回在1s以内，也会被拦截, 因此做当前页面刷新的兜底逻辑
+      const openWindow = window.open(resUrl);
+      if (openWindow == null || typeof openWindow === 'undefined') {
+        window.location.href = resUrl;
+      }
     }
   } catch (err) {
     const msg = getErrorMsg?.(err);
